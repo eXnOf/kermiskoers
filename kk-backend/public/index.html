@@ -197,7 +197,37 @@
           }) ;
         });
 
+        google.maps.event.addListener(drawingManager, 'markercomplete', updateStartFinish);
+
         buildColorPalette();
+      }
+
+      var koers;
+      var startStopMarker;
+
+      function updateStartFinish(marker) {
+        
+          let koersId = koers.id;
+          
+          startStopMarker = marker;
+          let coords = marker.getPosition();
+
+          const Http = new XMLHttpRequest();
+          const url = `/api/koers/${koersId}/startfinish`;
+          Http.open("POST", url, true);
+          Http.setRequestHeader("Content-Type", "application/json");
+          Http.send(JSON.stringify(coords));
+          
+          Http.onreadystatechange = function(e) { 
+            console.log(Http.responseText); }
+
+            let myLatLng = JSON.parse(Http.responseText);
+
+            var marker = new google.maps.Marker({
+              position: myLatLng,
+              map: map,
+              title: 'Corrected'
+            });
       }
 
 
@@ -212,13 +242,15 @@
           console.log(coordinates);
 
           const Http = new XMLHttpRequest();
-          const url = '/api';
+          const url = '/api/koers/';
           Http.open("POST", url, true);
           Http.setRequestHeader("Content-Type", "application/json");
           Http.send(JSON.stringify(coordinates));
           
           Http.onreadystatechange = function(e) { 
-            console.log(Http.responseText); }
+            console.log(Http.responseText); 
+            koers = JSON.parse(Http.responseText);
+          }
 
 
         }

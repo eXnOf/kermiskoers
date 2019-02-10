@@ -18,4 +18,8 @@ app.use(express.static(path.join(__dirname, 'public')));
 app.use('/', indexRouter);
 app.use('/api', apiRouter);
 
+app.use(function (req, res) {
+    return res.status(404).end();
+});
+
 module.exports = app;
