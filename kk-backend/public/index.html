@@ -64,7 +64,7 @@
             position: google.maps.ControlPosition.TOP_CENTER,
             drawingModes: ['marker', 'polyline']
           },
-          markerOptions: { draggable: true },
+          markerOptions: { draggable: true, icon: { url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"} },
           polylineOptions: { editable: true },
           map: map
         });
@@ -145,7 +145,7 @@
               type: 'Feature',
               geometry: {
                   type: 'Point',
-                  coordinates: [coords.lng, coords.lat]
+                  coordinates: [coords.lng(), coords.lat()]
               },
               properties: {
                 name: "Start/Finish"
@@ -157,17 +157,20 @@
           const url = `/api/koers/${koersId}/startfinish`;
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send(JSON.stringify(coords));
+          xhr.send(JSON.stringify(GeoJSON));
           
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
               let response = xhr.responseText;
             console.log(response); 
-            let myLatLng = JSON.parse(response);
+            
+            let myLatLngGeoJSON = JSON.parse(response);
+            let myLatLng = {lat: myLatLngGeoJSON.geometry.coordinates[1], lng: myLatLngGeoJSON.geometry.coordinates[0]};
 
             var marker = new google.maps.Marker({
               position: myLatLng,
               map: map,
+              icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" },
               title: 'Corrected'
             });
           }
@@ -190,13 +193,13 @@
               type: 'Feature',
               geometry: {
                   type: 'Polygon',
-                  coordinates: []
+                  coordinates: [[]]
               },
               properties: {}
           };
 
           for (let point of coordinates) {
-              GeoJSON.geometry.coordinates.push([point.lng, point.lat]);
+              GeoJSON.geometry.coordinates[0].push([point.lng, point.lat]);
           }
           console.log(GeoJSON);
 
@@ -204,7 +207,7 @@
           const url = '/api/koers/';
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
-          xhr.send(JSON.stringify(coordinates));
+          xhr.send(JSON.stringify(GeoJSON));
           
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {

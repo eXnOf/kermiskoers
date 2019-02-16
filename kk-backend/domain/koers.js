@@ -1,20 +1,25 @@
-var geolib = require('geolib');
-var convert = require('convert-units');
+var debug = require('debug')('kk-backend:api')
+var turf = require('@turf/turf');
 var uuidv4 = require('uuid/v4');
 
 class Koers {
-    constructor(polygonCoords) {
+    constructor(polygonGeoJSON) {
         this.id = uuidv4();
-        this.polygonCoords = polygonCoords;
+        this.polygonGeoJSON = polygonGeoJSON;
+
+        this.length = turf.lineDistance(this.polygonGeoJSON, { units: 'kilometers'});
     }
 
     get distanceInKm() {
-        let pathLength = geolib.getPathLength(this.polygonCoords);
-        return convert(pathLength).from('m').to('km');
+        let length = turf.lineDistance(this.polygonGeoJSON, { units: 'kilometers'});
+        return length;        
     }
 
     setStartFinish(startFinishProposal) {
-        return startFinishProposal;
+
+        var line = turf.polygonToLine(this.polygonGeoJSON);                
+        var snapped = turf.nearestPointOnLine(line, startFinishProposal, {units: 'kilometers'});
+        return snapped;
     }
 }
 
