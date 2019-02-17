@@ -229,6 +229,8 @@
                 icon: { url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png" },
                 map:map
               });
+
+              console.log(response);
             } 
           };
 
@@ -270,6 +272,8 @@
             if (xhr.readyState==4 && xhr.status==200) {
               var response = xhr.responseText;
               koers = JSON.parse(response);
+
+              console.log(koers);
             }
           }
         }
