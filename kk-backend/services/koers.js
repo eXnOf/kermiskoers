@@ -23,10 +23,25 @@ exports.setStartFinish = function(req, res, next) {
     let startFinishProposal = req.body;
     
     let koers = koersRepository.load(id);
-    let correctedStartFinish = koers.setStartFinish(startFinishProposal);
+    koers.startFinish = startFinishProposal;
     koersRepository.store(koers);
     
-    debug(correctedStartFinish);
+    debug(koers.startFinish);
 
-    return res.send(correctedStartFinish);
+    return res.send(koers.startFinish);
+}
+
+exports.evaluatePoint = function(req, res, next) {
+
+    debug(req.body); //TODO: Validate
+    
+    let id = req.params.id;
+    let point = req.body;
+    
+    let koers = koersRepository.load(id);
+    let pointOnKoers = koers.evaluatePoint(point);
+        
+    debug(pointOnKoers);
+
+    return res.send(pointOnKoers);
 }

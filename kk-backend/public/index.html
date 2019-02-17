@@ -48,6 +48,12 @@
         }
       }
 
+      var map;
+      var koers;
+      var startStopMarker;
+      var markerLastEvaluation;
+      var evaluatedMarker;
+
       function initialize() {
         map = new google.maps.Map(document.getElementById('map'), {
           zoom: 15,
@@ -88,7 +94,7 @@
         google.maps.event.addListener(map, 'click', clearSelection);
         google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
 
-        google.maps.event.addListener(drawingManager, 'markercomplete', updateStartFinish);
+        google.maps.event.addListener(drawingManager, 'markercomplete', handleMarkerCreation);
         google.maps.event.addListener(drawingManager, 'polylinecomplete', function(line) {
           reCalculateServerSide(line);
 
@@ -131,17 +137,24 @@
                               'Error: Your browser doesn\'t support geolocation.');
       }
 
-      var koers;
-      var startStopMarker;
+      function handleMarkerCreation(marker) {
+        if(startStopMarker) {
+          return evaluatePoint(marker);
+        }
+        else {
+          return updateStartFinish(marker);
+        }
+      }
+
 
       function updateStartFinish(marker) {
         
-          let koersId = koers.id;
+          console.log('updateStartFinish');
           
-          startStopMarker = marker;
+          let koersId = koers.id;
           let coords = marker.getPosition();
 
-          let GeoJSON = {
+          let startFinishGeoJSON = {
               type: 'Feature',
               geometry: {
                   type: 'Point',
@@ -151,10 +164,53 @@
                 name: "Start/Finish"
               }
           };
-          console.log(GeoJSON);
 
           const xhr = new XMLHttpRequest();
           const url = `/api/koers/${koersId}/startfinish`;
+          xhr.open("POST", url, true);
+          xhr.setRequestHeader("Content-Type", "application/json");
+          xhr.send(JSON.stringify(startFinishGeoJSON));
+          
+          xhr.onreadystatechange = function(e) { 
+            if (xhr.readyState==4 && xhr.status==200) {
+              let response = xhr.responseText;
+              let myLatLngGeoJSON = JSON.parse(response);
+              let myLatLng = new google.maps.LatLng(myLatLngGeoJSON.geometry.coordinates[1], myLatLngGeoJSON.geometry.coordinates[0]);
+
+              if(startStopMarker) {startStopMarker.setMap(null); }
+              startStopMarker = new google.maps.Marker({
+                position: myLatLng,
+                title: 'Start/Finish',
+                icon: { url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" },
+                map:map
+              });
+            }
+        }
+
+        marker.setMap(null);
+      }
+
+      
+
+      function evaluatePoint(marker) {
+          
+        console.log('evaluatePoint');
+
+          let koersId = koers.id;
+          let coords = marker.getPosition();
+          let GeoJSON = {
+              type: 'Feature',
+              geometry: {
+                  type: 'Point',
+                  coordinates: [coords.lng(), coords.lat()]
+              },
+              properties: {
+                name: "Current Position"
+              }
+          };
+
+          const xhr = new XMLHttpRequest();
+          const url = `/api/koers/${koersId}/evaluate`;
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send(JSON.stringify(GeoJSON));
@@ -162,20 +218,24 @@
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
               let response = xhr.responseText;
-            console.log(response); 
+              let myLatLngGeoJSON = JSON.parse(response);
+              let myLatLng = new google.maps.LatLng(myLatLngGeoJSON.geometry.coordinates[1], myLatLngGeoJSON.geometry.coordinates[0]);
             
-            let myLatLngGeoJSON = JSON.parse(response);
-            let myLatLng = {lat: myLatLngGeoJSON.geometry.coordinates[1], lng: myLatLngGeoJSON.geometry.coordinates[0]};
+              if(evaluatedMarker) {evaluatedMarker.setMap(null); }
 
-            var marker = new google.maps.Marker({
-              position: myLatLng,
-              map: map,
-              icon: { url: "http://maps.google.com/mapfiles/ms/icons/blue-dot.png" },
-              title: 'Corrected'
-            });
-          }
+              evaluatedMarker = new google.maps.Marker({
+                position: myLatLng,
+                title: 'Snapped Point',
+                icon: { url: "http://maps.google.com/mapfiles/ms/icons/yellow-dot.png" },
+                map:map
+              });
+            } 
+          };
+
+          if(markerLastEvaluation) {markerLastEvaluation.setMap(null); }
+          marker.title = 'Last evaluated Point'
+          markerLastEvaluation = marker;
         }
-      }
 
 
       function reCalculateServerSide(line) {
@@ -186,8 +246,6 @@
             var xy = vertices.getAt(i);
             coordinates.push({lat: xy.lat(), lng: xy.lng()});
           }
-
-          console.log(coordinates);
           
           let GeoJSON = {
               type: 'Feature',
@@ -201,7 +259,6 @@
           for (let point of coordinates) {
               GeoJSON.geometry.coordinates[0].push([point.lng, point.lat]);
           }
-          console.log(GeoJSON);
 
           const xhr = new XMLHttpRequest();
           const url = '/api/koers/';
@@ -212,7 +269,6 @@
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
               var response = xhr.responseText;
-              console.log(response); 
               koers = JSON.parse(response);
             }
           }
