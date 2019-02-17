@@ -45,3 +45,13 @@ exports.evaluatePoint = function(req, res, next) {
 
     return res.send(pointOnKoers);
 }
+
+exports.reverseKoers = function(req, res, next) {
+    let id = req.params.id;
+    
+    let koers = koersRepository.load(id);
+    koers.reverse();
+    koersRepository.store(koers);
+
+    return res.send(JSON.stringify('Success'));
+}

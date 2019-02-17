@@ -62,6 +62,10 @@ class Koers {
         snappedPoint.properties.distToEnd = distanceToEnd;
         return snappedPoint;
     }
+
+    reverse() {
+        this._lineGeoJSON.geometry.coordinates.reverse();
+    }
 }
 
 module.exports = Koers;
