@@ -172,6 +172,9 @@
       }
 
       function handleMarkerCreation(marker) {
+
+        console.log('handleMarkerCreation');
+
         if(startStopMarker) {
           return evaluatePoint(marker);
         }
@@ -214,9 +217,17 @@
               if(startStopMarker) {startStopMarker.setMap(null); }
               startStopMarker = new google.maps.Marker({
                 position: myLatLng,
+                draggable: true,
                 title: 'Start/Finish',
                 icon: { url: "http://maps.google.com/mapfiles/ms/icons/green-dot.png" },
                 map:map
+              });
+
+              google.maps.event.addListener(startStopMarker, 'dragend', function(e) {
+                let newMarkerPosition = new google.maps.Marker({
+                  position: e.latLng
+                });
+                updateStartFinish(newMarkerPosition);
               });
             }
         }
