@@ -3,7 +3,7 @@ var Koers = require('../domain/koers');
 var koersRepository = require('../data/koersRepository');
 
 
-exports.create = function(req, res, next) {
+exports.create = function (req, res, next) {
 
     debug(req.body); //TODO: Validate
 
@@ -15,43 +15,47 @@ exports.create = function(req, res, next) {
     return res.send(koers);
 }
 
-exports.setStartFinish = function(req, res, next) {
+exports.setStartFinish = function (req, res, next) {
 
     debug(req.body); //TODO: Validate
-    
+
     let id = req.params.id;
     let startFinishProposal = req.body;
-    
+
     let koers = koersRepository.load(id);
     koers.startFinish = startFinishProposal;
     koersRepository.store(koers);
-    
+
     debug(koers.startFinish);
 
     return res.send(koers.startFinish);
 }
 
-exports.evaluatePoint = function(req, res, next) {
+exports.evaluatePoint = function (req, res, next) {
 
     debug(req.body); //TODO: Validate
-    
+
     let id = req.params.id;
     let point = req.body;
-    
+
     let koers = koersRepository.load(id);
     let pointOnKoers = koers.evaluatePoint(point);
-        
+
     debug(pointOnKoers);
 
     return res.send(pointOnKoers);
 }
 
-exports.reverseKoers = function(req, res, next) {
+exports.reverseKoers = function (req, res, next) {
     let id = req.params.id;
-    
+
     let koers = koersRepository.load(id);
     koers.reverse();
     koersRepository.store(koers);
 
     return res.send(JSON.stringify('Success'));
+}
+
+exports.updateEvaluation = function (req, res, next) {
+    return res.send(JSON.stringify(50));
 }

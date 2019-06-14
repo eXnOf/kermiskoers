@@ -9,6 +9,8 @@ class Koers {
         this._polygonGeoJSON = polygonGeoJSON;
         this._lineGeoJSON = turf.polygonToLine(this._polygonGeoJSON);
         this._length = turf.lineDistance(this._polygonGeoJSON, { units: 'kilometers'});
+        // this._currentLocation.longitude = 3.717424;
+        // this._currentLocation.latitude = 51.054340;
     }
 
     get distanceInKm() {

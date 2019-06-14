@@ -1,0 +1,4 @@
+cron:
+- description: "update evaluation"
+  url: /api/koers/updateEvaluation/
+  schedule: every 1 minutes
