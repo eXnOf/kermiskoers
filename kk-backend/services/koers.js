@@ -34,16 +34,21 @@ exports.setStartFinish = function(req, res, next) {
 exports.evaluatePoint = function(req, res, next) {
 
     debug(req.body); //TODO: Validate
-    
+        
     let id = req.params.id;
     let point = req.body;
     
     let koers = koersRepository.load(id);
-    let pointOnKoers = koers.evaluatePoint(point);
-        
-    debug(pointOnKoers);
-
-    return res.send(pointOnKoers);
+    
+    return koers.evaluatePoint(point, (err, data) => {
+        if(err) {
+            res.sendStatus(500);
+        }
+        else {
+            debug(data);
+            res.send(data);
+        }
+    });
 }
 
 exports.reverseKoers = function(req, res, next) {
