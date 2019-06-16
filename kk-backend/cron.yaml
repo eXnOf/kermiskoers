@@ -1,1 +1,4 @@
 cron:
+- description: "update evaluation"
+  url: /api/koers/updateEvaluation/
+  schedule:  1 of jan 00:00
