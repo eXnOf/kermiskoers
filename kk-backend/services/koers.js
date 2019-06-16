@@ -56,6 +56,9 @@ exports.reverseKoers = function (req, res, next) {
     return res.send(JSON.stringify('Success'));
 }
 
-exports.updateEvaluation = function (req, res, next) {
-    return res.send(JSON.stringify(50));
+exports.getInfo = function (req, res, next) {
+    
+    let date = new Date();
+    let info = [ { "DistanceToFinish": date.getSeconds() + " km" } ];
+    return res.send(JSON.stringify(info));
 }
