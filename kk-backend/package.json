@@ -6,10 +6,12 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
+    "@google-cloud/datastore": "^4.1.4",
     "@turf/turf": "^5.1.6",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
+    "google-gax": "^1.1.5",
     "morgan": "~1.9.0",
     "uuid": "^3.3.2"
   }

@@ -3,9 +3,9 @@ var turf = require('@turf/turf');
 var uuidv4 = require('uuid/v4');
 
 class Koers {
-    constructor(polygonGeoJSON) {
-        this.id = uuidv4();
+    constructor(id, polygonGeoJSON) {
         
+        this._id = id;
         this._polygonGeoJSON = polygonGeoJSON;
         this._lineGeoJSON = turf.polygonToLine(this._polygonGeoJSON);
         this._length = turf.lineDistance(this._polygonGeoJSON, { units: 'kilometers'});

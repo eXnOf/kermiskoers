@@ -7,12 +7,17 @@ exports.create = function (req, res, next) {
 
     debug(req.body); //TODO: Validate
 
-    let koers = new Koers(req.body);
-    koersRepository.store(koers);
-
+    let koers = new Koers(null ,req.body);
     debug(koers);
 
-    return res.send(koers);
+    koersRepository.create(koers, (err, savedData) =>  {
+        if(err) {
+            next(err);
+            return;
+        }
+        
+        return res.send(savedData);
+    });
 }
 
 exports.setStartFinish = function (req, res, next) {
@@ -22,13 +27,24 @@ exports.setStartFinish = function (req, res, next) {
     let id = req.params.id;
     let startFinishProposal = req.body;
 
-    let koers = koersRepository.load(id);
-    koers.startFinish = startFinishProposal;
-    koersRepository.store(koers);
+    koersRepository.read(id, (err, readData) => {
+        if(err) {
+            next(err);
+            return;
+        }
 
-    debug(koers.startFinish);
+        readData.startFinish = startFinishProposal;
+        debug(readData.startFinish);
 
-    return res.send(koers.startFinish);
+        koersRepository.update(id, readData, (err, savedData) => {
+            if(err) {
+                next(err);
+                return;
+            }
+
+            return res.send(savedData.startFinish);
+        });
+    });
 }
 
 exports.evaluatePoint = function (req, res, next) {
@@ -38,12 +54,17 @@ exports.evaluatePoint = function (req, res, next) {
     let id = req.params.id;
     let point = req.body;
 
-    let koers = koersRepository.load(id);
-    let pointOnKoers = koers.evaluatePoint(point);
+    koersRepository.read(id, (err, readData) => {
+        if(err) {
+            next(err);
+            return;
+        }
 
-    debug(pointOnKoers);
+        let pointOnKoers = readData.evaluatePoint(point);
+        debug(pointOnKoers);
 
-    return res.send(pointOnKoers);
+        return res.send(pointOnKoers);
+    });
 }
 
 exports.reverseKoers = function (req, res, next) {
