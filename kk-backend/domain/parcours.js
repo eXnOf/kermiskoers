@@ -2,7 +2,7 @@ var debug = require('debug')('kk-backend:api')
 var turf = require('@turf/turf');
 var uuidv4 = require('uuid/v4');
 
-class Koers {
+class Parcours {
     constructor(id, polygonGeoJSON) {
         
         this._id = id;
@@ -18,7 +18,7 @@ class Koers {
     }
 
     set startFinish(startFinishProposal) {
-        let snappedStartFinish = this.snapPointToKoers(startFinishProposal);
+        let snappedStartFinish = this.snapPointToParcours(startFinishProposal);
 
         //TODO: recalculate line to start with starting point
         let lineParts = turf.lineSplit(this._lineGeoJSON, snappedStartFinish);
@@ -49,13 +49,13 @@ class Koers {
         return this._startFinish;
     }
 
-    snapPointToKoers(point) {
+    snapPointToParcours(point) {
         let snapped = turf.nearestPointOnLine(this._lineGeoJSON, point, {units: 'kilometers'});
         return snapped;
     }
 
     evaluatePoint(point) {
-        let snappedPoint = this.snapPointToKoers(point);
+        let snappedPoint = this.snapPointToParcours(point);
 
         let lineParts = turf.lineSplit(this._lineGeoJSON, snappedPoint);
         let pointToEnd = lineParts.features[1];
@@ -70,4 +70,4 @@ class Koers {
     }
 }
 
-module.exports = Koers;
+module.exports = Parcours;

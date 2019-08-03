@@ -4,7 +4,7 @@
 
 var debug = require('debug')('kk-backend:api')
 
-var Koers = require('../domain/koers');
+var Parcours = require('../domain/parcours');
 const {Datastore} = require('@google-cloud/datastore');
 
 const ds = new Datastore();
@@ -14,39 +14,39 @@ function fromDatastore(obj) {
     
   // debug(JSON.parse(obj._polygonGeoJSON));
 
-    let koers = new Koers(obj[Datastore.KEY].id, JSON.parse(obj._polygonGeoJSON));
+    let parcours = new Parcours(obj[Datastore.KEY].id, JSON.parse(obj._polygonGeoJSON));
     
-    return koers;
+    return parcours;
 }
   
-function toDatastore(koers, nonIndexed) {
+function toDatastore(parcours, nonIndexed) {
     nonIndexed = nonIndexed || [];
     const results = [];
 
 
     results.push({
       name: '_polygonGeoJSON',
-      value: JSON.stringify(koers._polygonGeoJSON),
+      value: JSON.stringify(parcours._polygonGeoJSON),
       excludeFromIndexes: true,
   });
 
-    // Object.keys(koers).forEach(k => {
-    //   if (koers[k] === undefined) {
+    // Object.keys(parcours).forEach(k => {
+    //   if (parcours[k] === undefined) {
     //     return;
     //   }
 
-    //   if(typeof(koers[k]) === "object")
+    //   if(typeof(parcours[k]) === "object")
     //   {
     //     results.push({
     //         name: k,
-    //         value: JSON.stringify(koers[k]),
+    //         value: JSON.stringify(parcours[k]),
     //         excludeFromIndexes: true,
     //       });
     //   }
     //   else {
     //     results.push({
     //         name: k,
-    //         value: koers[k],
+    //         value: parcours[k],
     //         excludeFromIndexes: nonIndexed.indexOf(k) !== -1,
     //     }); 
     // }
@@ -86,7 +86,7 @@ function list(limit, token, cb) {
   // [START update]
   function update(id, data, cb) {
 
-    debug('Updating koers %s ------------', id);
+    debug('Updating parcours %s ------------', id);
 
     let key;
     if (id) {
@@ -109,14 +109,14 @@ function list(limit, token, cb) {
   
   function create(data, cb) {
 
-    debug('Creating new koers -----------')
+    debug('Creating new parcours -----------')
 
     update(null, data, cb);
   }
   
   function read(id, cb) {
 
-    debug('Reading koers with id %s -------', id);
+    debug('Reading parcours with id %s -------', id);
 
     const key = ds.key([kind, parseInt(id, 10)]);
     ds.get(key, (err, entity) => {

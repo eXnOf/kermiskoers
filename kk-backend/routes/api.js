@@ -1,13 +1,13 @@
 var express = require('express');
 var router = express.Router();
 
-var koersService = require('../services/koers');
+var parcoursService = require('../services/parcours');
 
 /* GET users listing. */
-router.post('/koers/', koersService.create);
-router.post('/koers/:id/startfinish', koersService.setStartFinish);
-router.post('/koers/:id/evaluate', koersService.evaluatePoint);
-router.post('/koers/:id/reverse', koersService.reverseKoers);
-router.get('/koers/info', koersService.getInfo);
+router.post('/parcours/', parcoursService.create);
+router.post('/parcours/:id/startfinish', parcoursService.setStartFinish);
+router.post('/parcours/:id/evaluate', parcoursService.evaluatePoint);
+router.post('/parcours/:id/reverse', parcoursService.reverseParcours);
+router.get('/parcours/info', parcoursService.getInfo);
 
 module.exports = router;

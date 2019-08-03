@@ -48,17 +48,17 @@
         }
       }
 
-      function reverseSelectedKoers() {
-        if(koers) {
+      function reverseSelectedParcours() {
+        if(parcours) {
           const xhr = new XMLHttpRequest();
-          const url = `/api/koers/${koers.id}/reverse`;
+          const url = `/api/parcours/${parcours.id}/reverse`;
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send();
           
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
-              console.log('Koers reversed!');
+              console.log('Parcours reversed!');
               
               // console.log(startStopMarker.icon.url === "http://maps.google.com/mapfiles/ms/icons/green-dot.png");
               // if(startStopMarker) {
@@ -81,7 +81,7 @@
 
 
       var map;
-      var koers;
+      var parcours;
       var startStopMarker;
       var markerLastEvaluation;
       var evaluatedMarker;
@@ -126,7 +126,7 @@
         google.maps.event.addListener(map, 'click', clearSelection);
         
         google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
-        google.maps.event.addDomListener(document.getElementById('reverse-button'), 'click', reverseSelectedKoers);
+        google.maps.event.addDomListener(document.getElementById('reverse-button'), 'click', reverseSelectedParcours);
 
         google.maps.event.addListener(drawingManager, 'markercomplete', handleMarkerCreation);
         google.maps.event.addListener(drawingManager, 'polylinecomplete', function(line) {
@@ -188,7 +188,7 @@
         
           console.log('updateStartFinish');
           
-          let koersId = koers.id;
+          let parcoursId = parcours.id;
           let coords = marker.getPosition();
 
           let startFinishGeoJSON = {
@@ -203,7 +203,7 @@
           };
 
           const xhr = new XMLHttpRequest();
-          const url = `/api/koers/${koersId}/startfinish`;
+          const url = `/api/parcours/${parcoursId}/startfinish`;
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send(JSON.stringify(startFinishGeoJSON));
@@ -241,7 +241,7 @@
           
         console.log('evaluatePoint');
 
-          let koersId = koers.id;
+          let parcoursId = parcours.id;
           let coords = marker.getPosition();
           let GeoJSON = {
               type: 'Feature',
@@ -255,7 +255,7 @@
           };
 
           const xhr = new XMLHttpRequest();
-          const url = `/api/koers/${koersId}/evaluate`;
+          const url = `/api/parcours/${parcoursId}/evaluate`;
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send(JSON.stringify(GeoJSON));
@@ -308,7 +308,7 @@
           }
 
           const xhr = new XMLHttpRequest();
-          const url = '/api/koers/';
+          const url = '/api/parcours/';
           xhr.open("POST", url, true);
           xhr.setRequestHeader("Content-Type", "application/json");
           xhr.send(JSON.stringify(GeoJSON));
@@ -316,9 +316,9 @@
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
               var response = xhr.responseText;
-              koers = JSON.parse(response);
+              parcours = JSON.parse(response);
 
-              console.log(koers);
+              console.log(parcours);
             }
           }
         }
@@ -332,7 +332,7 @@
       <div>
         <h1>Kermiskoers</h1>
         <button id="delete-button">Delete Selected Shape</button>
-        <button id="reverse-button">Reverse selected koers</button>
+        <button id="reverse-button">Reverse selected parcours</button>
       </div>
     </div>
     <div id="map"></div>

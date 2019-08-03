@@ -1,13 +1,13 @@
 var debug = require('debug')('kk-backend:api')
-var Koers = require('../domain/koers');
-var koersRepository = require('../data/koersRepository');
+var Parcours = require('../domain/parcours');
+var parcoursRepository = require('../data/parcoursRepository');
 
 
 exports.create = function (req, res, next) {
 
-    let koers = new Koers(null ,req.body);
+    let parcours = new Parcours(null ,req.body);
 
-    koersRepository.create(koers, (err, savedData) =>  {
+    parcoursRepository.create(parcours, (err, savedData) =>  {
         if(err) {
             next(err);
             return;
@@ -22,7 +22,7 @@ exports.setStartFinish = function (req, res, next) {
     let id = req.params.id;
     let startFinishProposal = req.body;
 
-    koersRepository.read(id, (err, readData) => {
+    parcoursRepository.read(id, (err, readData) => {
         if(err) {
             next(err);
             return;
@@ -31,7 +31,7 @@ exports.setStartFinish = function (req, res, next) {
         readData.startFinish = startFinishProposal;
         debug(readData.startFinish);
 
-        koersRepository.update(id, readData, (err, savedData) => {
+        parcoursRepository.update(id, readData, (err, savedData) => {
             if(err) {
                 next(err);
                 return;
@@ -47,25 +47,25 @@ exports.evaluatePoint = function (req, res, next) {
     let id = req.params.id;
     let point = req.body;
 
-    koersRepository.read(id, (err, readData) => {
+    parcoursRepository.read(id, (err, readData) => {
         if(err) {
             next(err);
             return;
         }
 
-        let pointOnKoers = readData.evaluatePoint(point);
-        debug(pointOnKoers);
+        let pointOnParcours = readData.evaluatePoint(point);
+        debug(pointOnParcours);
 
-        return res.send(pointOnKoers);
+        return res.send(pointOnParcours);
     });
 }
 
-exports.reverseKoers = function (req, res, next) {
+exports.reverseParcours = function (req, res, next) {
     let id = req.params.id;
 
-    let koers = koersRepository.load(id);
-    koers.reverse();
-    koersRepository.store(koers);
+    let parcours = parcoursRepository.load(id);
+    parcours.reverse();
+    parcoursRepository.store(parcours);
 
     return res.send(JSON.stringify('Success'));
 }
