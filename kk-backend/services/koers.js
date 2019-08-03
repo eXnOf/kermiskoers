@@ -5,10 +5,7 @@ var koersRepository = require('../data/koersRepository');
 
 exports.create = function (req, res, next) {
 
-    debug(req.body); //TODO: Validate
-
     let koers = new Koers(null ,req.body);
-    debug(koers);
 
     koersRepository.create(koers, (err, savedData) =>  {
         if(err) {
@@ -21,8 +18,6 @@ exports.create = function (req, res, next) {
 }
 
 exports.setStartFinish = function (req, res, next) {
-
-    debug(req.body); //TODO: Validate
 
     let id = req.params.id;
     let startFinishProposal = req.body;
@@ -48,8 +43,6 @@ exports.setStartFinish = function (req, res, next) {
 }
 
 exports.evaluatePoint = function (req, res, next) {
-
-    debug(req.body); //TODO: Validate
 
     let id = req.params.id;
     let point = req.body;

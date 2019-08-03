@@ -12,7 +12,7 @@ const kind = 'Parcours';
 
 function fromDatastore(obj) {
     
-  debug(JSON.parse(obj._polygonGeoJSON));
+  // debug(JSON.parse(obj._polygonGeoJSON));
 
     let koers = new Koers(obj[Datastore.KEY].id, JSON.parse(obj._polygonGeoJSON));
     
