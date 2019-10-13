@@ -2,6 +2,9 @@
 
 Written against node v8.11.3. 
 
+The goal of this project is to achieve what is described in the following diagram.
+![alt text](kermiskoers_overview.jpg "KermisKoers project overview diagram")
+
 To run:
 - install node v8.11.3 (https://nodejs.org/download/release/v8.11.3/)
 - download code from https://github.com/eXnOf/kermiskoers (or use git source control to clone the repo locally; install git from https://git-scm.com/book/en/v2/Getting-Started-Installing-Git, go into a chosen directory and type "git clone https://github.com/eXnOf/kermiskoers.git")
