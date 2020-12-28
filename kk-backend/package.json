@@ -6,13 +6,16 @@
     "start": "node ./bin/www"
   },
   "dependencies": {
-    "@google-cloud/datastore": "^4.1.4",
+    "@google-cloud/datastore": "^6.3.1",
     "@turf/turf": "^5.1.6",
+    "acorn": "^8.0.4",
     "cookie-parser": "~1.4.3",
     "debug": "~2.6.9",
     "express": "~4.16.0",
-    "google-gax": "^1.1.5",
+    "google-gax": "^2.9.2",
+    "https-proxy-agent": "^5.0.0",
     "morgan": "~1.9.0",
+    "node-forge": "^0.10.0",
     "uuid": "^3.3.2"
   },
   "devDependencies": {
