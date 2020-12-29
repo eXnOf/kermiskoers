@@ -5,6 +5,7 @@ var parcoursService = require('../services/parcours');
 
 /* GET users listing. */
 router.post('/parcours/', parcoursService.create);
+router.put('/parcours/:id', parcoursService.update);
 router.post('/parcours/:id/startfinish', parcoursService.setStartFinish);
 router.post('/parcours/:id/evaluate', parcoursService.evaluatePoint);
 router.post('/parcours/:id/reverse', parcoursService.reverseParcours);

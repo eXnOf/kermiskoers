@@ -17,6 +17,21 @@ exports.create = function (req, res, next) {
     });
 }
 
+exports.update = function (req, res, next) {
+
+    let id = req.params.id;
+    let parcours = new Parcours(id ,req.body);
+
+    parcoursRepository.update(id, parcours, (err, savedData) =>  {
+        if(err) {
+            next(err);
+            return;
+        }
+        
+        return res.send(savedData);
+    });
+}
+
 exports.setStartFinish = function (req, res, next) {
 
     let id = req.params.id;
