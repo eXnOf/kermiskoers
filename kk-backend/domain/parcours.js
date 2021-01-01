@@ -8,9 +8,7 @@ class Parcours {
         this._id = id;
         this._polygonGeoJSON = polygonGeoJSON;
         this._lineGeoJSON = turf.polygonToLine(this._polygonGeoJSON);
-        this._length = turf.lineDistance(this._polygonGeoJSON, { units: 'kilometers'});
-        // this._currentLocation.longitude = 3.717424;
-        // this._currentLocation.latitude = 51.054340;
+        this._length = turf.lineDistance(this._polygonGeoJSON, { units: 'kilometers'});        
     }
 
     get distanceInKm() {
@@ -47,6 +45,14 @@ class Parcours {
 
     get startFinish() {
         return this._startFinish;
+    }
+
+    set id(value) {
+        this._id = value;
+    }
+
+    get id() {
+        return this._id;
     }
 
     snapPointToParcours(point) {

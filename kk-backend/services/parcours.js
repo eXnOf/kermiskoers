@@ -17,6 +17,32 @@ exports.create = function (req, res, next) {
     });
 }
 
+exports.get = function (req, res, next) {
+
+    let id = req.params.id;
+    parcoursRepository.read(id, (err, savedData) =>  {
+        if(err) {
+            next(err);
+            return;
+        }
+        
+        return res.send(savedData);
+    });
+}
+
+exports.getGeoJson = function (req, res, next) {
+
+    let id = req.params.id;
+    parcoursRepository.read(id, (err, savedData) =>  {
+        if(err) {
+            next(err);
+            return;
+        }
+        
+        return res.send(savedData._lineGeoJSON);
+    });
+}
+
 exports.update = function (req, res, next) {
 
     let id = req.params.id;

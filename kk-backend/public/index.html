@@ -122,31 +122,32 @@
             setSelection(newShape);
           }
         });
+
         google.maps.event.addListener(drawingManager, 'drawingmode_changed', clearSelection);
         google.maps.event.addListener(map, 'click', clearSelection);
         
-        google.maps.event.addDomListener(document.getElementById('delete-button'), 'click', deleteSelectedShape);
-        google.maps.event.addDomListener(document.getElementById('reverse-button'), 'click', reverseSelectedParcours);
+        document.getElementById('delete-button').addEventListener('click', deleteSelectedShape);
+        document.getElementById('reverse-button').addEventListener('click', reverseSelectedParcours);
+        document.getElementById('load-button').addEventListener('click', loadParcours);
 
         google.maps.event.addListener(drawingManager, 'markercomplete', handleMarkerCreation);
         google.maps.event.addListener(drawingManager, 'polylinecomplete', function(line) {
-          console.log('polylinecomplete');
-          reCalculateServerSide(line);
-
-          google.maps.event.addListener(line.getPath(), 'set_at', function() {
-            console.log('set_at');
+            console.log('polylinecomplete');
             reCalculateServerSide(line);
-          }) ;
 
-          google.maps.event.addListener(line.getPath(), 'remove_at', function() {
-            console.log('remove_at');
-            reCalculateServerSide(line);
-          }) ;
+            google.maps.event.addListener(line.getPath(), 'set_at', function() {
+              console.log('set_at');
+              reCalculateServerSide(line);
+            }) ;
+            google.maps.event.addListener(line.getPath(), 'remove_at', function() {
+              console.log('remove_at');
+              reCalculateServerSide(line);
+            }) ;
+            google.maps.event.addListener(line.getPath(), 'insert_at', function() {
+              console.log('insert_at');
+              reCalculateServerSide(line);
+            }) ;
 
-          google.maps.event.addListener(line.getPath(), 'insert_at', function() {
-            console.log('insert_at');
-            reCalculateServerSide(line);
-          }) ;
         });
         
         // Try HTML5 geolocation.
@@ -307,7 +308,7 @@
           const xhr = new XMLHttpRequest();
           
           if(parcours) {
-            const url = `/api/parcours/${parcours.id}`;
+            const url = `/api/parcours/${parcours._id}`;
             xhr.open("PUT", url, true);
           }
           else {
@@ -321,7 +322,9 @@
           xhr.onreadystatechange = function(e) { 
             if (xhr.readyState==4 && xhr.status==200) {
               var response = xhr.responseText;
+              
               parcours = JSON.parse(response);
+              document.getElementById('parcoursid-txt').value = parcours._id;              
 
               console.log(parcours);
             }
@@ -329,6 +332,82 @@
 
           
         }
+
+      function loadParcours() {
+        
+        let parcoursId = document.getElementById('parcoursid-txt').value;
+
+        console.log(parcoursId);
+
+        const xhr = new XMLHttpRequest();
+        const url = `/api/parcours/${parcoursId}`;
+        xhr.open("GET", url, true);
+        xhr.setRequestHeader("Content-Type", "application/json");
+        xhr.send();
+        
+        xhr.onreadystatechange = function(e) { 
+          if (xhr.readyState==4 && xhr.status==200) {
+            var response = xhr.responseText;
+            
+            parcours = JSON.parse(response);
+            console.log(parcours);
+
+
+            map = new google.maps.Map(document.getElementById("map"), {
+              zoom: 15,
+              center: new google.maps.LatLng(51.132,3.861),
+              mapTypeId: google.maps.MapTypeId.ROADMAP,
+              disableDefaultUI: true,
+              zoomControl: true
+            });
+            
+            const urlgeojson = `/api/parcours/${parcoursId}/geojson`;
+            // NOTE: This uses cross-domain XHR, and may not work on older browsers.
+            map.data.loadGeoJson(urlgeojson, {},
+              function(features) {
+
+                  // console.log(features);
+                  // console.log(map.data.getFeatureById(1));
+
+                  // map.data.overrideStyle(map.data.getFeatureById(1), { editable: true });
+
+
+                  var shape = [];
+                  for (var i = 0; i < map.data.getFeatureById(ID).getGeometry().getLength(); i++) {
+                          var shapeData = map.data.getFeatureById(ID).getGeometry().getAt(i).getArray();
+                          shape.push(shapeData);
+                      }
+
+                      nowEditingShape = new google.maps.Polygon({
+                        paths: shape,
+                        strokeColor: '#FF0000',
+                        strokeOpacity: 0.8,
+                        strokeWeight: 2,
+                        fillColor: '#FF0000',
+                        fillOpacity: 0.35,
+                      editable: true
+                      });
+                      map.data.remove(map.data.getFeatureById(ID));
+                      nowEditingShape.setMap(map);
+
+
+                });
+            
+            
+            drawingManager = new google.maps.drawing.DrawingManager({
+              drawingControlOptions: {
+                position: google.maps.ControlPosition.TOP_CENTER,
+                drawingModes: ['marker', 'polyline']
+              },
+              markerOptions: { draggable: true, icon: { url: "http://maps.google.com/mapfiles/ms/icons/red-dot.png"} },
+              polylineOptions: { editable: true },
+              map: map
+            });
+            
+          }
+        }
+
+      }
 
       google.maps.event.addDomListener(window, 'load', initialize);
 
@@ -340,6 +419,10 @@
         <h1>Kermiskoers</h1>
         <button id="delete-button">Delete Selected Shape</button>
         <button id="reverse-button">Reverse selected parcours</button>
+        <br />
+        <br />
+        <input type="text" id="parcoursid-txt" />
+        <button id="load-button">Load</button>
       </div>
     </div>
     <div id="map"></div>
